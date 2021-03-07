@@ -52,8 +52,8 @@ for video in pl.videos:
 
 - 結合影片及音樂
 ```
-audio_stream = <audio_path> 
-video_stream = <video_path>
+audio_stream = ffmpeg.input(<audio_path>)
+video_stream = ffmpeg.input(<video_path>)
 video_name = <output_name>
 ffmpeg.output(audio_stream, video_stream, video_name).run() 
 ```
