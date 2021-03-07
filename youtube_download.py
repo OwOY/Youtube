@@ -1,7 +1,6 @@
 from pytube import YouTube
 import ssl
 import os
-import sys
 import ffmpeg 
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -16,15 +15,18 @@ class Youtube:
 
     def main(self):
         
-        self.choose_res()
-    
-
-    def choose_res(self):
-
         yt = YouTube(self.url)
         stream_yt_list = yt.streams
         print(yt.title)
-        res = int(input('請選擇您要的影片清晰度(預設mp4)\n(1)1080p\n(2)720p\n(3)360p\n(4)240p\n(5)離開 :  '))
+        v_or_m = int(input('請選擇(1)下載影片(2)下載音樂 : '))
+        if v_or_m == 1:
+            self.choose_res(stream_yt_list)
+        elif v_or_m == 2:
+            self.download_mp3(stream_yt_list)
+
+    def choose_res(self, stream_yt_list):
+
+        res = int(input('請選擇您要的影片清晰度(預設mp4)\n(1)1080p\n(2)720p\n(3)360p\n(4)240p\n(5)離開 : '))
         stream_yt_audio = stream_yt_list.filter(mime_type="audio/mp4")[0]
 
         if res == 1:
@@ -37,8 +39,7 @@ class Youtube:
         elif res == 2:
             stream_yt = stream_yt_list.filter(res="720p", mime_type="video/mp4")[0]
             try:
-                stream_yt.download()
-                stream_yt_audio.download()
+                self.download_video_audio(stream_yt, stream_yt_audio)
                 print('OK')
             except Exception as err:
                 print(err)
@@ -46,8 +47,7 @@ class Youtube:
         elif res == 3:
             stream_yt = stream_yt_list.filter(res="360p", mime_type="video/mp4")[0]
             try:
-                stream_yt.download()
-                stream_yt_audio.download()
+                self.download_video_audio(stream_yt, stream_yt_audio)
                 print('OK')
             except Exception as err:
                 print(err)
@@ -55,8 +55,7 @@ class Youtube:
         elif res == 4:
             stream_yt = stream_yt_list.filter(res="240p", mime_type="video/mp4")[0]
             try:
-                stream_yt.download()
-                stream_yt_audio.download()
+                self.download_video_audio(stream_yt, stream_yt_audio)
                 print('OK')
             except Exception as err:
                 print(err)
@@ -89,7 +88,18 @@ class Youtube:
         os.remove(audio_name)
 
 
+    def download_mp3(self, stream_yt_list):
+        
+        stream_mp4_audio = stream_yt_list.filter(mime_type="audio/mp4")[0]
+        mp4_name = stream_mp4_audio.download()
+
+        mp4_input = ffmpeg.input(mp4_name)
+        mp3_name = os.path.basename(mp4_name).replace('.mp4','.mp3')
+        ffmpeg.output(mp4_input, mp3_name).run() 
+
+
+
 if __name__ == '__main__':
     
-    url = sys.argv[1]
+    url = str(input('請輸入youtube網址 ： '))
     Youtube(url)
