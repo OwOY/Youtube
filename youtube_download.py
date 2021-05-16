@@ -84,6 +84,9 @@ class Youtube:
         video_stream = ffmpeg.input(f'{path}/video.mp4') 
         audio_stream = ffmpeg.input(audio_name) 
         ffmpeg.output(audio_stream, video_stream, video_name).run() 
+        os.rename(video_name, f'{path}/{video_name}')
+        if not os.path.isdir(path):
+            os.makedirs(path)
         os.remove(f'{path}/video.mp4')
         os.remove(audio_name)
 
@@ -96,7 +99,10 @@ class Youtube:
         mp4_input = ffmpeg.input(mp4_name)
         mp3_name = os.path.basename(mp4_name).replace('.mp4','.mp3')
         ffmpeg.output(mp4_input, mp3_name).run() 
-
+        if not os.path.isdir('media'):
+            os.makedirs('media')
+        os.rename(mp3_name, f'media/{mp3_name}')
+        os.remove(mp4_name)
 
 
 if __name__ == '__main__':
